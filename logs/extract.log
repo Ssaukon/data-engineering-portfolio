@@ -1,0 +1,15 @@
+2026-04-02 12:17:45,180 - INFO - Starting extraction process
+2026-04-02 12:17:45,383 - INFO - Page 1 fetched successfully
+2026-04-02 12:17:46,479 - INFO - Page 2 fetched successfully
+2026-04-02 12:17:47,589 - INFO - Page 3 fetched successfully
+2026-04-02 12:17:48,689 - WARNING - Page 4 failed with status 429
+2026-04-02 12:17:50,758 - WARNING - Page 4 failed with status 429
+2026-04-02 12:17:54,895 - WARNING - Page 4 failed with status 429
+2026-04-02 12:18:00,896 - ERROR - Page 4 failed after 3 retries
+2026-04-02 12:18:01,978 - WARNING - Page 5 failed with status 429
+2026-04-02 12:18:04,059 - WARNING - Page 5 failed with status 429
+2026-04-02 12:18:08,138 - WARNING - Page 5 failed with status 429
+2026-04-02 12:18:14,139 - ERROR - Page 5 failed after 3 retries
+2026-04-02 12:18:15,151 - INFO - Total records fetched: 750
+2026-04-02 12:18:15,217 - INFO - Data saved to raw_data\2026-04-02_10-18.json
+2026-04-02 12:18:15,217 - INFO - Extraction finished successfully
