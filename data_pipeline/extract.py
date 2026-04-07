@@ -4,6 +4,9 @@ import time
 import logging
 from datetime import datetime
 from pathlib import Path
+import random
+
+
 
 
 from config.config import (
@@ -26,8 +29,8 @@ logging.basicConfig(
 )
 
 # ---------------- HELPERS ---------------- #
-def fetch_page(page: int) -> list:
-    """Fetch one page with retry logic"""
+def fetch_page(page: int) -> list[dict]:
+    """Fetch one page with retry logic, handling 429 rate limits"""
     for attempt in range(1, RETRIES + 1):
         try:
             response = requests.get(
@@ -40,28 +43,42 @@ def fetch_page(page: int) -> list:
                 logging.info(f"Page {page} fetched successfully")
                 return response.json()
 
-            logging.warning(
-                f"Page {page} failed with status {response.status_code}"
-            )
+            elif response.status_code == 429:
+                # Rate limit hit → backoff + jitter
+                wait_time = 15 * attempt + random.uniform(1, 3)
+                logging.warning(f"Rate limit hit on page {page}. Sleeping {wait_time:.1f}s")
+                time.sleep(wait_time)
+                continue
 
-        except Exception as e:
-            logging.error(f"Error fetching page {page}: {e}")
+            else:
+                logging.warning(f"Page {page} failed with status {response.status_code}")
 
-        time.sleep(2 * attempt)  # exponential backoff
+        except requests.exceptions.Timeout:
+            wait_time = 5 * attempt + random.uniform(0.5, 1.5)
+            logging.warning(f"Timeout on page {page}. Sleeping {wait_time:.1f}s")
+            time.sleep(wait_time)
+
+        except requests.exceptions.RequestException as e:
+            logging.error(f"Request error on page {page}: {e}")
+            wait_time = 5 * attempt + random.uniform(0.5, 1.5)
+            time.sleep(wait_time)
 
     logging.error(f"Page {page} failed after {RETRIES} retries")
     return []
 
 
-def fetch_all_data() -> list:
-    """Fetch all pages"""
+def fetch_all_data() -> list[dict]:
+    """Fetch all pages with smart sleep between pages"""
     all_data = []
 
     for page in range(1, PAGES + 1):
         data = fetch_page(page)
         all_data.extend(data)
 
-        time.sleep(SLEEP_BETWEEN_REQUESTS)
+        # Sleep between pages to reduce rate limit hits
+        wait_time = SLEEP_BETWEEN_REQUESTS + random.uniform(1, 3)
+        logging.info(f"Sleeping {wait_time:.1f}s before next page")
+        time.sleep(wait_time)
 
     logging.info(f"Total records fetched: {len(all_data)}")
     return all_data
