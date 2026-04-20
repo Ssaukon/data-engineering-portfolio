@@ -13,11 +13,11 @@ from config.config import (
     RETRIES,
     SLEEP_BETWEEN_REQUESTS,
     RAW_DATA_PATH,
-    LOG_PATH,
+    LOG_PATH_EXTRACT,
 )
 
 # ---------------- LOGGING ---------------- #
-LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
+LOG_PATH_EXTRACT.parent.mkdir(parents=True, exist_ok=True)
 
 logging.basicConfig(
     filename=LOG_PATH,
